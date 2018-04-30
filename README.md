@@ -4,6 +4,9 @@ Welcome to Cmkbeat.
 
 CMKBeat is used to retrieve information from Check_MK's livestatus and send it to Elasticsearch / Logstash / etc.
 
+Ensure that this folder is at the following location:
+`${GOPATH}/github.com/jeremyweader`
+
 ## Getting Started with Cmkbeat
 
 ### Requirements
