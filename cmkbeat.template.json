@@ -1,0 +1,86 @@
+{
+  "mappings": {
+    "_default_": {
+      "_all": {
+        "enabled": false
+      },
+      "dynamic_templates": [
+        {
+          "str_to_kw": {
+            "mapping": {
+              "ignore_above": 1024,
+              "type": "keyword",
+			  "norms": false
+            },
+            "match_mapping_type": "string"
+          }
+		},
+		{
+		  "perfdata_as_num": {
+			"mapping": {
+				"type": "float"
+			},
+			"path_match": "[metrics][*][*]"
+		  }
+        }
+      ],
+      "numeric_detection": true,
+      "properties": {
+        "@timestamp": {
+          "type": "date"
+        },
+        "beat": {
+          "properties": {
+            "hostname": {
+              "ignore_above": 1024,
+              "type": "keyword"
+            },
+            "name": {
+              "ignore_above": 1024,
+              "type": "keyword"
+            }
+          }
+        },
+        "host_name": {
+          "norms": false,
+          "type": "keyword"
+        },
+        "display_name": {
+          "norms": false,
+          "type": "keyword"
+        },
+        "state": {
+          "type": "short"
+        },
+        "plugin_output": {
+          "norms": false,
+          "type": "text"
+        },
+		"long_plugin_output": {
+          "norms": false,
+          "type": "text"
+        },
+		"percent_state_change": {
+          "type": "float"
+        },
+        "perf_data": {
+          "norms": false,
+          "type": "text"
+        },
+        "tags": {
+          "ignore_above": 1024,
+          "type": "keyword"
+        }
+      }
+    }
+  },
+  "order": 0,
+  "settings": {
+    "index.refresh_interval": "5s",
+	"index.mapping.coerce": true,
+	"index.mapping.ignore_malformed": true,
+	"index.mapping.total_fields.limit": 5000,
+	"index.mapping.nested_fields.limit": 2500
+  },
+  "template": "cmkbeat-*"
+}

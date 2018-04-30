@@ -1,0 +1,140 @@
+
+#================================ General =====================================
+
+# The name of the shipper that publishes the network data. It can be used to group
+# all the transactions sent by a single shipper in the web interface.
+#name:
+
+# The tags of the shipper are included in their own field with each
+# transaction published.
+#tags: ["service-X", "web-tier"]
+
+# Optional fields that you can specify to add additional information to the
+# output.
+#fields:
+#  env: staging
+
+#================================ Outputs =====================================
+
+# Configure what outputs to use when sending the data collected by the beat.
+# Multiple outputs may be used.
+
+#-------------------------- Elasticsearch output ------------------------------
+output.elasticsearch:
+  # Boolean flag to enable or disable the output module.
+  enabled: true
+  
+  # Array of hosts to connect to.
+  hosts: ["localhost:9200"]
+  
+  # Optional protocol and basic auth credentials.
+  #protocol: "https"
+  #username: "elastic"
+  #password: "changeme"
+  
+  # Optional index name. The default is "beatname" plus date
+  # and generates [beatname-]YYYY.MM.DD keys.
+  index: "beatname-%{+yyyy.MM.dd}"
+  
+  # Set to false to disable template loading.
+  template.enabled: true
+  
+  # Template name. By default the template name is beatname.
+  template.name: "beatname"
+  
+  # Path to template file
+  template.path: "${path.config}/beatname.template.json"
+  
+  # Overwrite existing template
+  template.overwrite: true
+  
+  # If set to true, beatname checks the Elasticsearch version at connect time, and if it
+  # is 2.x, it loads the file specified by the template.versions.2x.path setting. The
+  # default is true.
+  template.versions.2x.enabled: false
+
+#----------------------------- Logstash output --------------------------------
+#output.logstash:
+  # The Logstash hosts
+  #hosts: ["localhost:5044"]
+
+  # Optional SSL. By default is off.
+  # List of root certificates for HTTPS server verifications
+  #ssl.certificate_authorities: ["/etc/pki/root/ca.pem"]
+
+  # Certificate for SSL client authentication
+  #ssl.certificate: "/etc/pki/client/cert.pem"
+
+  # Client Certificate Key
+  #ssl.key: "/etc/pki/client/cert.key"
+
+#================================= Paths ======================================
+path:
+  # The home path for the beatname installation. This is the default base path
+  # for all other path settings and for miscellaneous files that come with the
+  # distribution (for example, the sample dashboards).
+  # If not set by a CLI flag or in the configuration file, the default for the
+  # home path is the location of the binary.
+  home: /usr/share/beatname
+
+  # The configuration path for the beatname installation. This is the default
+  # base path for configuration files, including the main YAML configuration file
+  # and the Elasticsearch template file. If not set by a CLI flag or in the
+  # configuration file, the default for the configuration path is the home path.
+  config: /etc/beatname
+
+  # The data path for the beatname installation. This is the default base path
+  # for all the files in which beatname needs to store its data. If not set by a
+  # CLI flag or in the configuration file, the default for the data path is a data
+  # subdirectory inside the home path.
+  data: /var/lib/beatname
+
+  # The logs path for a beatname installation. This is the default location for
+  # the Beat's log files. If not set by a CLI flag or in the configuration file,
+  # the default for the logs path is a logs subdirectory inside the home path.
+  logs: /var/log/beatname
+
+#================================ Logging =====================================
+# There are three options for the log output: syslog, file, stderr.
+# Under Windows systems, the log files are per default sent to the file output,
+# under all other system per default to syslog.
+logging:
+  # Sets log level. The default log level is info.
+  # Available log levels are: critical, error, warning, info, debug
+  level: info
+
+  # Enable debug output for selected components. To enable all selectors use ["*"]
+  # Other available selectors are "beat", "publish", "service"
+  # Multiple selectors can be chained.
+  #selectors: [ ]
+
+  # Send all logging output to syslog. The default is false.
+  to_syslog: false
+
+  # If enabled, beatname periodically logs its internal metrics that have changed
+  # in the last period. For each metric that changed, the delta from the value at
+  # the beginning of the period is logged. Also, the total values for
+  # all non-zero internal metrics are logged on shutdown. The default is true.
+  metrics.enabled: false
+
+  # The period after which to log the internal metrics. The default is 30s.
+  #logging.metrics.period: 30s
+
+  # Logging to rotating files files. Set logging.to_files to false to disable logging to
+  # files.
+  to_files: true
+  files:
+    # Configure the path where the logs are written. The default is the logs directory
+    # under the home path (the binary location).
+    path: /var/log/beatname
+
+    # The name of the files where the logs are written to.
+    name: beatname.log
+
+    # Configure log file size limit. If limit is reached, log file will be
+    # automatically rotated
+    rotateeverybytes: 10485760
+
+    # Number of rotated log files to keep. Oldest files will be deleted first.
+    keepfiles: 4
+

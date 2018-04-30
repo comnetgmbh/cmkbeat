@@ -1,0 +1,158 @@
+
+////
+This file is generated! See etc/fields.yml and scripts/generate_field_docs.py
+////
+
+[[exported-fields]]
+= Exported Fields
+
+[partintro]
+
+--
+This document describes the fields that are exported by Cmkbeat. They are
+grouped in the following categories:
+
+* <<exported-fields-beat>>
+* <<exported-fields-cmkbeat>>
+
+--
+[[exported-fields-beat]]
+== Beat Fields
+
+Contains common beat fields available in all event types.
+
+
+
+[float]
+=== beat.name
+
+The name of the Beat sending the log messages. If the Beat name is set in the configuration file, then that value is used. If it is not set, the hostname is used. To set the Beat name, use the `name` option in the configuration file.
+
+
+[float]
+=== beat.hostname
+
+The hostname as returned by the operating system on which the Beat is running.
+
+
+[float]
+=== @timestamp
+
+type: date
+
+example: August 26th 2016, 12:35:53.332
+
+format: date
+
+required: True
+
+The timestamp when the event log record was generated.
+
+
+[float]
+=== tags
+
+Arbitrary tags that can be set per Beat and per transaction type.
+
+
+[float]
+=== fields
+
+type: dict
+
+Contains user configurable fields.
+
+
+[[exported-fields-cmkbeat]]
+== cmkbeat Fields
+
+Retrieves host status from MK Livestatus (Check_MK)
+
+
+[float]
+=== host_name
+
+type: text
+
+The Check_MK hostname of the host running the check
+
+[float]
+=== host_alias
+
+type: text
+
+The Check_MK alias of the host running the check
+
+[float]
+=== display_name
+
+type: text
+
+The Check_MK display name of the service being checked
+
+[float]
+=== check_command
+
+type: text
+
+The Check_MK check command being run
+
+[float]
+=== state
+
+type: integer
+
+The Check_MK return state of the check:
+  0 - OK
+  1 - WARNING
+  2 - CRITICAL
+  3 - UNKNOWN
+
+[float]
+=== acknowledged
+
+type: boolean
+
+Whether the Check_MK notification has been acknowledged
+format: true / false
+
+[float]
+=== plugin_output
+
+type: text
+
+The Check_MK output summary from the check being run. Usually includes the service state
+and the text response from the check
+Ex. OK - free space: / 3326MB (56%);
+
+[float]
+=== long_plugin_output
+
+type: text
+
+If the plugin returns multiple lines of text output, this field will contain the additional output
+returned from the Check_MK check. This field is optional.
+
+[float]
+=== percent_state_change
+
+Type: number
+
+The percentage of recent Check_MK check responses that have resulted in a state change for the service
+
+[float]
+=== perf_data
+
+type: text
+
+The performance data string returned by the Check_MK plugin, if provided. Not all checks will return
+performance data. Format is {value};{min};{max};{warn};{crit}
+
+[float]
+=== metrics
+
+type: dict
+
+If enabled in the configuration, the performance data returned by the plugin will be parsed into separate
+metrics that can be tracked, and stored under the [metrics][service_name][perfdata_object] field.
+Ex: [metrics][Disk Usage][free][value] = "3326"

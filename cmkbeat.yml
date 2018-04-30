@@ -1,0 +1,179 @@
+#================================ Configuration =====================================
+
+setup.template.name: "cmkbeat"
+setup.template.pattern: "cmkbeat-*"
+setup.template.fields: "./etc/fields.yml"
+
+cmkbeat:
+  # How often to query livestatus for data. The default is 30s.
+  period: 30s
+
+  # The host and port where livestatus is listening.
+  cmkHost: "10.0.0.10:6557"
+
+  # Which livestatus table to query
+  query: "services"
+
+  # The columns of data you want to retrieve. At a minimum, the following fields must be included:
+  # ["host_name", "display_name", "state",  "plugin_output", "perf_data"]
+  columns: ["host_name", "display_name", "state", "plugin_output", "long_plugin_output", "percent_state_change", "perf_data"]
+  
+  # (Optional) An array of filters to apply to the query.
+  # By default a query must pass all filters, but 'And: x' or 'Or: x' commands can be used,
+  # where x specifies the number of previous filter lines to apply the operator to.
+  # Ex. ["state = 1", "state = 3", "Or: 2" ] matches anything with a state of 1 OR 3.
+  #filter: ["checks_enabled = 1", "host_state = 0"]
+
+  # Whether or not to split up the perfdata into individual metrics. This will create additional fields such as
+  # [cpu][value], [cpu][min], [cpu][max], etc. for each parameter in the performance data. Default is true.
+  #metrics: true
+
+  # If enabled, only perfdata for the specified services will be reported. Default is to include metrics for all services.
+  #metrics_allow: ["CPU Utilization", "Disk IO", "Memory", "Interface"]
+  
+  # If enabled, perfdata for the specified services will not be reported. Default is to include metrics for all services.
+  #metrics_block: ["Uptime", "System Time", "Check_MK", "Log"]
+  
+  # Whether to report just the 'value' field of the perfdata metrics, or whether to include the min / max / warn / crit
+  # fields as well. Default is true.
+  metrics_value_only: false
+  
+#================================ General =====================================
+
+# The name of the shipper that publishes the network data. It can be used to group
+# all the transactions sent by a single shipper in the web interface.
+#name:
+
+# The tags of the shipper are included in their own field with each
+# transaction published.
+#tags: ["service-X", "web-tier"]
+
+# Optional fields that you can specify to add additional information to the
+# output.
+#fields:
+#  env: staging
+
+#================================ Outputs =====================================
+
+# Configure what outputs to use when sending the data collected by the beat.
+# Multiple outputs may be used.
+
+#-------------------------- Elasticsearch output ------------------------------
+output.elasticsearch:
+  # Boolean flag to enable or disable the output module.
+  enabled: true
+  
+  # Array of hosts to connect to.
+  hosts: ["localhost:9200"]
+  
+  # Optional protocol and basic auth credentials.
+  #protocol: "https"
+  #username: "elastic"
+  #password: "changeme"
+  
+  # Optional index name. The default is "cmkbeat" plus date
+  # and generates [cmkbeat-]YYYY.MM.DD keys.
+  index: "cmkbeat-%{+yyyy.MM.dd}"
+  
+  # Set to false to disable template loading.
+  template.enabled: true
+  
+  # Template name. By default the template name is cmkbeat.
+  template.name: "cmkbeat"
+  
+  # Path to template file
+  template.path: "${path.config}/cmkbeat.template.json"
+  
+  # Overwrite existing template
+  template.overwrite: true
+  
+  # If set to true, cmkbeat checks the Elasticsearch version at connect time, and if it
+  # is 2.x, it loads the file specified by the template.versions.2x.path setting. The
+  # default is true.
+  template.versions.2x.enabled: false
+
+#----------------------------- Logstash output --------------------------------
+#output.logstash:
+  # The Logstash hosts
+  #hosts: ["localhost:5044"]
+
+  # Optional SSL. By default is off.
+  # List of root certificates for HTTPS server verifications
+  #ssl.certificate_authorities: ["/etc/pki/root/ca.pem"]
+
+  # Certificate for SSL client authentication
+  #ssl.certificate: "/etc/pki/client/cert.pem"
+
+  # Client Certificate Key
+  #ssl.key: "/etc/pki/client/cert.key"
+
+#================================= Paths ======================================
+path:
+  # The home path for the cmkbeat installation. This is the default base path
+  # for all other path settings and for miscellaneous files that come with the
+  # distribution (for example, the sample dashboards).
+  # If not set by a CLI flag or in the configuration file, the default for the
+  # home path is the location of the binary.
+  home: /usr/share/cmkbeat
+
+  # The configuration path for the cmkbeat installation. This is the default
+  # base path for configuration files, including the main YAML configuration file
+  # and the Elasticsearch template file. If not set by a CLI flag or in the
+  # configuration file, the default for the configuration path is the home path.
+  config: /etc/cmkbeat
+
+  # The data path for the cmkbeat installation. This is the default base path
+  # for all the files in which cmkbeat needs to store its data. If not set by a
+  # CLI flag or in the configuration file, the default for the data path is a data
+  # subdirectory inside the home path.
+  data: /var/lib/cmkbeat
+
+  # The logs path for a cmkbeat installation. This is the default location for
+  # the Beat's log files. If not set by a CLI flag or in the configuration file,
+  # the default for the logs path is a logs subdirectory inside the home path.
+  logs: /var/log/cmkbeat
+
+#================================ Logging =====================================
+# There are three options for the log output: syslog, file, stderr.
+# Under Windows systems, the log files are per default sent to the file output,
+# under all other system per default to syslog.
+logging:
+  # Sets log level. The default log level is info.
+  # Available log levels are: critical, error, warning, info, debug
+  level: info
+
+  # Enable debug output for selected components. To enable all selectors use ["*"]
+  # Other available selectors are "beat", "publish", "service"
+  # Multiple selectors can be chained.
+  #selectors: [ ]
+
+  # Send all logging output to syslog. The default is false.
+  to_syslog: false
+
+  # If enabled, cmkbeat periodically logs its internal metrics that have changed
+  # in the last period. For each metric that changed, the delta from the value at
+  # the beginning of the period is logged. Also, the total values for
+  # all non-zero internal metrics are logged on shutdown. The default is true.
+  metrics.enabled: false
+
+  # The period after which to log the internal metrics. The default is 30s.
+  #logging.metrics.period: 30s
+
+  # Logging to rotating files files. Set logging.to_files to false to disable logging to
+  # files.
+  to_files: true
+  files:
+    # Configure the path where the logs are written. The default is the logs directory
+    # under the home path (the binary location).
+    path: /var/log/cmkbeat
+
+    # The name of the files where the logs are written to.
+    name: cmkbeat.log
+
+    # Configure log file size limit. If limit is reached, log file will be
+    # automatically rotated
+    rotateeverybytes: 10485760
+
+    # Number of rotated log files to keep. Oldest files will be deleted first.
+    keepfiles: 4
+
