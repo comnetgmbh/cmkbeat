@@ -10,7 +10,6 @@ import (
 	"github.com/elastic/beats/libbeat/beat"
 	"github.com/elastic/beats/libbeat/common"
 	"github.com/elastic/beats/libbeat/logp"
-//	"github.com/elastic/beats/libbeat/publisher"
 
 	"github.com/jeremyweader/cmkbeat/config"
 	"github.com/jeremyweader/go-livestatus"
@@ -118,9 +117,7 @@ func (bt *Cmkbeat) lsQuery(lshost string, beatname string) error {
 				or, _ := strconv.Atoi(strings.TrimPrefix(f, "Or: "))
 				q.Or(or)
 			} else {
-//				if len(f) > 1 {
 					q.Filter(f)
-//				}
 			}
 		}
 	}
